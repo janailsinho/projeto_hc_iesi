@@ -108,12 +108,14 @@ if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
-# Roteadores da API
-from .routers import paciente, auth, admin, health
+
+# Roteadores da API (incluindo o SAP)
+from .routers import paciente, auth, admin, health, sap
 app.include_router(health.router)
 app.include_router(paciente.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
+app.include_router(sap.router)  # <--- Rota do Serviço de Anatomia Patológica (SAP) devidamente incluída
 
 @app.get("/{full_path:path}")
 async def serve_frontend(full_path: str):
@@ -121,7 +123,6 @@ async def serve_frontend(full_path: str):
     Serve o arquivo index.html para todas as rotas que não são da API ou arquivos estáticos.
     Isso é necessário para que o roteamento do Vue (SPA) funcione.
     """
-    # Se a rota começa com 'api', deixa o roteador do FastAPI lidar
     if full_path.startswith("api"):
         raise HTTPException(status_code=404, detail="API route not found")
     

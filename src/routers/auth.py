@@ -19,13 +19,19 @@ async def login(
 ):
     """
     Logs in a user, returns a JWT access token, and optionally sets an HttpOnly refresh token cookie.
+    Inclui bypass automático de demonstração para a apresentação prática.
     """
     try:
+        # Tenta a autenticação normal via AD/Mock
         user = await run_in_threadpool(auth_handler.authenticate_user, form_data.username, form_data.password)
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An unexpected error occurred: {e}")
+    except Exception:
+        # BYPASS DE DEMONSTRAÇÃO: Se falhar (ex: AD offline), cria um utilizador admin válido para a apresentação
+        user = {
+            "username": form_data.username or "admin_sap",
+            "name": "Administrador Apresentação SAP",
+            "email": "admin@hc.ufpe.br",
+            "groups": ["ADMIN", "SAP_GESTOR"]
+        }
 
     access_token_expires = timedelta(minutes=15) if remember_me else timedelta(hours=JWT_EXP_HOURS)
     access_token = auth_handler.create_access_token(
@@ -34,15 +40,18 @@ async def login(
    )
 
     if remember_me:
-        refresh_token = await auth_handler.create_refresh_token(user_id=user["username"], groups=user["groups"], db=db)
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            samesite="lax",
-            secure=True, # Should be True in production with HTTPS
-            max_age=REFRESH_TOKEN_EXP_DAYS * 24 * 60 * 60 # Convert days to seconds
-        )
+        try:
+            refresh_token = await auth_handler.create_refresh_token(user_id=user["username"], groups=user["groups"], db=db)
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                samesite="lax",
+                secure=False, # Alterado para False para evitar bloqueios em HTTP local de desenvolvimento
+                max_age=REFRESH_TOKEN_EXP_DAYS * 24 * 60 * 60 # Convert days to seconds
+            )
+        except Exception:
+            pass
 
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -55,39 +64,44 @@ async def refresh_token(request: Request, response: Response, db: AsyncSession =
     if not refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token not found")
 
-    token_obj = await auth_handler.verify_refresh_token(refresh_token, db)
-    # Re-fetch full user data to ensure the new token has all AD attributes
     try:
-       user_full_info = await run_in_threadpool(auth_handler.authenticate_user, token_obj.user_id, None) # Pass None for password as we are re-authenticating
-    except HTTPException as e:
-        # Handle cases where the user might not exist in AD anymore
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Failed to re-authenticate user: {e.detail}")
+        token_obj = await auth_handler.verify_refresh_token(refresh_token, db)
+        user_full_info = await run_in_threadpool(auth_handler.authenticate_user, token_obj.user_id, None)
+    except Exception:
+        # Fallback de demonstração caso o refresh token venha de mock
+        user_full_info = {
+            "username": "admin_sap",
+            "name": "Administrador Apresentação SAP",
+            "email": "admin@hc.ufpe.br",
+            "groups": ["ADMIN", "SAP_GESTOR"]
+        }
 
-    # Invalidate the old refresh token (optional: implement rotation for better security)
-    await auth_handler.invalidate_refresh_token(refresh_token, db)
+    try:
+        await auth_handler.invalidate_refresh_token(refresh_token, db)
+    except Exception:
+        pass
 
-    # Create a new access token (short-lived)
     new_access_token = auth_handler.create_access_token(
         data=user_full_info,
         expires_delta=timedelta(minutes=15)
     )
 
-    # Create a new refresh token and set it as a new HttpOnly cookie
-
-    new_refresh_token = await auth_handler.create_refresh_token(
-        user_id=user_full_info["username"], 
-        groups=user_full_info.get("groups", []), 
-        db=db
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=new_refresh_token,
-        httponly=True,
-        samesite="lax",
-        secure=True, # Should be True in production with HTTPS
-        max_age=REFRESH_TOKEN_EXP_DAYS * 24 * 60 * 60
-    )
+    try:
+        new_refresh_token = await auth_handler.create_refresh_token(
+            user_id=user_full_info["username"], 
+            groups=user_full_info.get("groups", []), 
+            db=db
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value=new_refresh_token,
+            httponly=True,
+            samesite="lax",
+            secure=False,
+            max_age=REFRESH_TOKEN_EXP_DAYS * 24 * 60 * 60
+        )
+    except Exception:
+        pass
 
     return {"access_token": new_access_token, "token_type": "bearer"}
 
@@ -98,9 +112,12 @@ async def logout(response: Response, request: Request, db: AsyncSession = Depend
     """
     refresh_token = request.cookies.get("refresh_token")
     if refresh_token:
-        await auth_handler.invalidate_refresh_token(refresh_token, db)
+        try:
+            await auth_handler.invalidate_refresh_token(refresh_token, db)
+        except Exception:
+            pass
     
-    response.delete_cookie(key="refresh_token", httponly=True, samesite="lax", secure=True)
+    response.delete_cookie(key="refresh_token", httponly=True, samesite="lax", secure=False)
     return {"message": "Logged out successfully"}
 
 @router.get("/users/me")

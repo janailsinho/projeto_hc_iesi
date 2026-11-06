@@ -9,7 +9,7 @@
       </template>
       <div class="space-y-4">
         <p class="text-gray-700 leading-relaxed">
-          Bem-vindo ao **Framework-SETISD-HC-UFPE**! Esta é a página inicial padrão do seu novo sistema.
+          Bem-vindo ao <strong>SISPATO (Sistema de Gestão do Serviço de Anatomia Patológica — HC-UFPE/EBSERH)</strong>! Utilize o menu ao lado para acessar o monitoramento em tempo real de amostras, laudos e SLAs.
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">

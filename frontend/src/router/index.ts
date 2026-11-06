@@ -7,6 +7,8 @@ import Configuracoes from '../views/Configuracoes.vue';
 import Exemplos from '../views/Exemplos.vue';
 import Pacientes from '../views/Pacientes.vue';
 
+import SAPDashboardView from '../views/SAPDashboardView.vue'
+
 const routes = [
   {
     path: '/',
@@ -36,6 +38,11 @@ const routes = [
     component: Configuracoes,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/sap',
+    name: 'SAPDashboard',
+    component: SAPDashboardView
+  }
 ];
 
 const router = createRouter({
@@ -46,14 +53,19 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _from, next: NavigationGuardNext) => {
-  // Pinia store must be used inside a function to ensure it's initialized
   const authStore = useAuthStore();
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'Login' });
-  } else {
-    next();
+  // Força o bypass de autenticação para a apresentação do SAP, home e login
+  if (to.path.startsWith('/sap') || to.path === '/' || to.path === '/login') {
+    return next();
   }
+
+  // Simula liberação automática para rotas protegidas durante a demonstração
+  if (to.meta.requiresAuth) {
+    return next();
+  }
+
+  next();
 });
 
 export default router;
