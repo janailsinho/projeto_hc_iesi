@@ -1,4 +1,4 @@
-# [NOME DO SISTEMA] — Documento de Validação e Especificação de Negócio
+# SISPATO (HC-UFPE) — Documento de Validação e Especificação de Negócio
 
 > **Padrão Oficial SETISD / HC-UFPE (HU Brasil) — Fase 0 (Alinhamento de Negócio)**  
 > **Público-alvo:** Profissionais das áreas envolvidas e Equipe de TI.  
@@ -10,11 +10,11 @@
 
 | Campo | Descrição |
 | :--- | :--- |
-| **Nome do Sistema** | [Ex: Sistema de Gestão de Escalas / Gerenciador de Leitos UTI] |
-| **Área Solicitante / Cliente** | [Gerência, Unidade ou Setor no HC-UFPE] |
-| **Instância Superior Competente** | [Gerência à qual a área proponente esteja subordinada ou Superintendência] |
-| **Líder Técnico (SETISD)** | [Analista de TI desiginado para prestar suporte técnico] |
-| **Objetivo Estratégico HU Brasil** | [Vincular o projeto aos objetivos do HU Brasil] |
+| **Nome do Sistema** | SISPATO — Sistema Integrado de Gestão do Serviço de Anatomia Patológica |
+| **Área Solicitante / Cliente** | Unidade de Anatomia Patológica — Serviço de Anatomia Patológica (SAP / HC-UFPE) |
+| **Instância Superior Competente** | Divisão de Apoio Diagnóstico e Terapêutico (DADT) / Gerência de Atenção à Saúde (GAS) |
+| **Líder Técnico (SETISD)** | Daniel Turmina / Equipe SETISD — Equipe 6 (IESI - CIn/UFPE) |
+| **Objetivo Estratégico HU Brasil** | Qualificar a assistência hospitalar, garantir a segurança do paciente oncológico e promover a transformação digital dos processos diagnósticos na rede EBSERH. |
 
 ---
 
@@ -22,13 +22,13 @@
 
 > **Objetivo:** Dizer com clareza qual é o problema real de trabalho. Sem rodeios: o que hoje está quebrado, ineficiente ou gerando risco para o hospital?
 
-* **A Dor Central:**  
-  [Resumo direto da dor em 1 ou 2 frases. *Ex: A consolidação de informações essenciais é feita de forma descentralizada e manual, gerando retrabalho constante, atrasos crônicos e risco de perda de dados.*]
+- **A Dor Central:**  
+  O sistema corporativo nacional da EBSERH (AGHU/AGHUx) não possui módulo nativo de Anatomia Patológica, obrigando o SAP do HC-UFPE a gerir amostras, bancadas técnicas e prazos de forma fragmentada e manual — dividindo a rotina entre 3 telas genéricas do AGHU, planilhas paralelas no Microsoft Teams, livros de protocolo físicos e fichas de papel.
 
-* **Por que isso não pode continuar (Impactos Reais):**
-  - **Sobrecarga de Trabalho:** As chefias e equipes perdem horas redigitando dados e conferindo manualmente tarefas que poderiam ser automáticas.
-  - **Falta de Visibilidade:** A gestão não sabe em tempo real quem já entregou, quem está com pendências e onde estão os gargalos.
-  - **Risco Institucional e Legal:** Falta de histórico confiável para responder a auditorias, questionamentos de órgãos de controle ou conferências internas.
+- **Por que isso não pode continuar (Impactos Reais):**
+  - **Sobrecarga de Trabalho:** Recepcionistas, técnicos e médicos residentes perdem horas redigitando dados de pacientes e exames em planilhas do Teams e livros de papel para suprir a falta de fluxo contínuo no AGHU.
+  - **Falta de Visibilidade:** A chefia e os médicos assistentes não sabem em tempo real em qual bancada (Recepção, Macroscopia, Processamento Técnico ou Microscopia) a amostra está, exigindo buscas manuais em gavetas e arquivos físicos.
+  - **Risco Institucional e Legal:** Inexistência de alertas automáticos para o cumprimento da **Lei Federal nº 12.732/12 (Lei dos 60 Dias para início do tratamento oncológico)** e da meta interna de **20 dias** para liberação de laudos, além do risco de atraso no reingresso de peças de Congelação (CO) para análise histopatológica definitiva.
 
 ---
 
@@ -36,14 +36,14 @@
 
 > **Objetivo:** Mapear a realidade crua de como as equipes se viram no dia a dia para realizar essa tarefa hoje.
 
-* **Meios Utilizados Hoje:**  
-  [Descreva o que usam: papel impresso físico, anotações de prancheta, planilhas Excel locais no computador, trocas de e-mail ou mensagens de WhatsApp].
+- **Meios Utilizados Hoje:**  
+  Telas avulsas do AGHU, planilhas compartilhadas no Microsoft Teams, livros de carga físicos impressos, caneta marcadora em frascos, pranchetas físicas com tarjas vermelhas (para sinalizar urgências oncológicas) e chamadas telefônicas (para resultados de congelação intraoperatória).
 
-* **A Rotina Prática de Trabalho:**
-  1. **Início:** Alguém cria uma planilha do zero, copia o arquivo do mês anterior ou imprime formulários em papel para distribuir.
-  2. **Preenchimento:** Os responsáveis anotam as informações à mão ou digitam em suas planilhas, muitas vezes tendo que redigitar nomes de profissionais e locais que já existem nos sistemas hospitalares (como o AGHU).
-  3. **Conferência:** As folhas impressas ou arquivos vão para a chefia, que confere linha por linha no papel (com caneta) ou em telas dispersas, assinando manualmente cada página.
-  4. **Entrega e Arquivo:** As pastas físicas são transportadas até a área responsável ou enviadas por e-mail, ficando guardadas em gavetas ou pastas de rede sem garantia de qual versão é a final.
+- **A Rotina Prática de Trabalho:**
+  1. **Início (Recepção e Triagem):** Para amostras internas, o operador abre 3 telas distintas no AGHU para conferir o pedido, redigita tudo numa planilha do Teams para gerar o código anual sequencial, escreve o código à mão no frasco com caneta marcadora e anota no livro físico. Para amostras externas (Prefeituras), preenche outra planilha no Teams para que a Central de Regulação crie o prontuário no AGHU antes de poder dar entrada no exame.
+  2. **Preenchimento (Macroscopia e Bancadas):** Residentes e técnicos clivam a peça cirúrgica, anotam manualmente a quantidade de fragmentos e cassetes (letras A, B, C...) na planilha do Teams, digitam o texto macroscópico no AGHU e usam pranchetas vermelhas físicas para destacar pacientes oncológicos ou internados. No caso de Congelação (CO), o resultado é passado por telefone ao cirurgião em 30 minutos, mas o retorno da amostra física para o fluxo Histopatológico (Solicitação 2) depende de controle manual.
+  3. **Conferência (Microscopia e Solicitações Extras):** Os médicos patologistas e residentes avaliam as lâminas e digitam o laudo. Caso precisem de novos cortes, colorações especiais, revisão de peça ou Imunohistoquímica (IHQ — que exige laudo independente ou envio externo ao A.C. Camargo), o retorno da demanda ao laboratório técnico ocorre por comunicação verbal ou anotações em papel.
+  4. **Entrega e Arquivo:** Após a liberação do laudo no AGHU, as fichas em papel, blocos de parafina e lâminas são guardados fisicamente em gavetas, tornando qualquer consulta de histórico ou rastreio de pendências lenta e dependente de busca presencial.
 
 ---
 
@@ -51,13 +51,13 @@
 
 > **Objetivo:** Definir com clareza o que a solução digital deve trazer para eliminar a dor do processo atual.
 
-* **A Proposta de Valor:** [O que o sistema faz. *Ex: Centralizar todo o processo em um ambiente web simples, onde os dados já nascem integrados com as bases oficiais, o preenchimento é validado na hora e a tramitação ocorre com um clique.*]
-* **Ganhos Práticos Imediatos:**
-  - Fim do papel e das assinaturas manuais físicas.
-  - Alerta automático de erros ou inconsistências no momento da digitação.
-  - Assinatura eletrônica segura com registro de quem fez, quando aprovou e o que alterou.
-  - Painel de controle em tempo real para a gestão acompanhar entregas e pendências.
-  - Histórico guardado, inviolável e fácil de consultar a qualquer momento.
+- **A Proposta de Valor:** Centralizar toda a jornada da amostra anatomopatológica (Histopatológico, Congelação, Imunohistoquímica, Citopatologia Geral e Citologia Cérvico-Vaginal) em um ambiente web integrado ao banco de dados do AGHU, garantindo rastreabilidade por QR Code em cada bancada e monitoramento automático de SLAs.
+- **Ganhos Práticos Imediatos:**
+  - Fim do livro de protocolo físico, das planilhas paralelas no Microsoft Teams e das pranchetas vermelhas manuais.
+  - Geração automática do código anual do SAP e de etiquetas com QR Code na recepção.
+  - Alerta visual automático de prazos críticos (**Meta interna de 20 dias** e **Lei dos 60 dias da Oncologia**).
+  - Rastreabilidade completa de check-in/check-out nas bancadas (quem manipulou, em qual etapa, data e hora).
+  - Painel gerencial em tempo real com a fila de exames por etapa do processo para a chefia e equipe médica.
 
 ---
 
@@ -65,10 +65,10 @@
 
 > **Objetivo:** Explicar em linguagem direta como o usuário vai interagir com o sistema, resolvendo a dor do processo manual de ponta a ponta.
 
-* **1. Os dados já vêm prontos:** O usuário não precisa mais recadastrar pessoas, setores ou cargos do zero. Ao abrir a tela, a lista oficial da sua equipe e local de trabalho já está carregada.
-* **2. Preenchimento rápido com travas contra erros:** O responsável digita ou seleciona as informações direto na tela. Se tentar lançar dados conflitantes (ex: duplicidade de horários ou campos obrigatórios em branco), o próprio sistema avisa antes de salvar.
-* **3. Aprovação com um clique:** Concluída a digitação, a chefia confere tudo em uma tela unificada e aprova eletronicamente. O sistema registra automaticamente quem aprovou, data e hora, travando contra alterações indevidas.
-* **4. Informação pronta e disponível:** A gestão acompanha em tempo real um painel mostrando quem já entregou e quem está pendente. A versão oficial homologada fica acessível para consulta imediata de quem tem direito, sem necessidade de procurar papéis ou cobrar por telefone.
+- **1. Os dados já vêm prontos:** Ao informar o número da requisição ou prontuário do AGHU, o sistema puxa automaticamente os dados demográficos e clínicos do paciente, gera o protocolo anual (`SAP-AAAA-NNN`) e emite o QR Code de rastreabilidade sem redigitação.
+- **2. Preenchimento rápido com travas contra erros:** Nas bancadas de Macroscopia e Processamento Técnico, os profissionais bipam o QR Code da amostra, registram a quantidade de cassetes/fragmentos e o laudo macroscópico preliminar com máscaras padronizadas. Em exames de Congelação, o sistema vincula automaticamente a Solicitação 1 (CO) à Solicitação 2 (HP), impedindo que a peça fique esquecida após a cirurgia.
+- **3. Aprovação e fluxos de retorno com um clique:** Na análise microscópica, se o patologista precisar de recorte, coloração especial ou Imunohistoquímica (IHQ), solicita diretamente na tela, devolvendo o item para a fila técnica com alerta visual. Concluído o diagnóstico, a liberação registra a autoria, data e hora.
+- **4. Informação pronta e disponível:** O **Painel SAP** exibe em tempo real os indicadores estratégicos (Total, Em Processamento, Alerta Meta 20 Dias, Lei 60 Dias Oncologia e Concluídos/Arquivados), permitindo localizar qualquer amostra ou histórico de auditoria com um clique.
 
 ---
 
@@ -76,96 +76,41 @@
 
 | Ator / Perfil no Hospital | O que faz HOJE (Rotina Manual) | O que passará a fazer no NOVO SISTEMA | O que NÃO poderá fazer |
 | :--- | :--- | :--- | :--- |
-| **Área Gestora do Processo** *(Ex: Unidade de Pessoal, Farmácia Central, Regulação)* | Cobra prazos por telefone/e-mail, confere pilhas de papel ou junta dezenas de planilhas dispersas. | Habilita os períodos de trabalho, cadastra regras gerais, publica o resultado final e acompanha o painel geral de pendências em tempo real. | Não preenche dados rotineiros operacionais de setores individuais. |
-| **Profissional do Setor / Executante** *(Quem realiza o atendimento ou rotina na ponta)* | Preenche formulário impresso ou Excel local, correndo risco de esquecer dados ou duplicar lançamentos. | Lança os dados direto no sistema com validações em tempo real e encaminha a sua parte para conferência da chefia. | Não visualiza nem altera dados de setores que não sejam de sua alçada. |
-| **Chefia Imediata / Responsável pelo Setor** *(Ex: Chefia de Unidade ou Setor)* | Confere folhas rubricadas à mão na mesa física, assina no papel e leva as pastas fisicamente. | Visualiza em uma tela única o trabalho da sua equipe, faz ajustes rápidos e aprova eletronicamente com um clique. | Não pode enviar lotes parciais ou com pendências em aberto. |
-| **Gestão / Coordenação Superior** *(Ex: Chefia de Divisão ou Gerência* | Não tem visão em tempo real das entregas; depende de relatórios manuais solicitados e demorados. | Acompanha indicadores gerais em tempo real (painel executivo com taxas de cumprimento de prazos e pendências). | Acesso estritamente para visualização gerencial (não edita registros operacionais). |
-| **Público / Usuário do Serviço** *(Colaboradores do hospital, pacientes ou cidadãos)* | Precisa ligar, mandar e-mail ou ir presencialmente ao setor para obter uma informação ou comprovante. | Consulta com agilidade pelo portal, pesquisando por nome ou setor, com rapidez e transparência garantida. | Não tem acesso a dados restritos ou confidenciais. |
+| **Recepção do SAP** | Abre 3 telas no AGHU, digita em planilha do Teams, escreve no frasco à mão e preenche livro físico. | Consulta a requisição integrada do AGHU, valida o estágio da amostra e gera o protocolo anual com etiqueta QR Code em 1 clique. | Não preenche descrições macroscópicas nem emite ou altera laudos médicos. |
+| **Técnico de Laboratório** | Controla cassetes e lâminas em planilhas e papel; recebe pedidos de recorte/coloração verbalmente. | Realiza a leitura do QR Code nas bancadas (inclusão, microtomia, coloração) e visualiza fila eletrônica de recortes e IHQ. | Não altera diagnósticos médicos nem homologa laudos finais. |
+| **Médico Residente / Patologista** | Digita macroscopia em sistemas separados, usa pranchetas vermelhas físicas e solicita recortes em papel. | Registra a clivagem/macroscopia estruturada, acompanha prioridades oncológicas no painel, solicita IHQ/recortes e libera laudos. | Não exclui registros de auditoria nem pula etapas obrigatórias de conferência. |
+| **Chefia do SAP / Preceptoria** | Não tem visão consolidada em tempo real; precisa cruzar planilhas do Teams para identificar atrasos. | Monitora o Painel SAP em tempo real (SLAs de 20 e 60 dias), audita gargalos por etapa e gere parâmetros do serviço. | Não apaga o histórico imutável de rastreabilidade das amostras. |
+| **Central de Regulação / Médicos Assistentes** | Trocam planilhas no Teams para cadastrar pacientes externos ou ligam para o SAP perguntando sobre laudos. | Cadastram o prontuário no AGHU (consumido automaticamente pelo SISPATO) e consultam o status atualizado do exame sem ligar para o laboratório. | Não manipulam etapas internas de bancada do laboratório. |
 
 ---
 
 ## 7. Regras de Negócio Inegociáveis (RNs)
 
-* **RN-01 (Identificação Funcional Única):** O profissional é identificado exclusivamente pela sua matrícula funcional (SIAPE). Para preservar a privacidade e evitar riscos de vazamento, dados pessoais sensíveis desnecessários (como CPF) não são coletados nem expostos no sistema.
-* **RN-02 (Prevenção de Duplicidade e Choques):** O sistema impede e bloqueia que a mesma pessoa seja alocada em dois setores, turnos ou atendimentos conflitantes no mesmo horário, eliminando de raiz o risco das planilhas paralelas manuais.
-* **RN-03 (Preservação e Imutabilidade do Histórico):** O fechamento de um período ou a abertura de um novo ciclo nunca apaga, altera ou sobrescreve informações passadas. Registros homologados tornam-se imutáveis para garantir respaldo em auditorias e consultas futuras.
-* **RN-04 (Homologação em Bloco / Entrega Completa):** A chefia de unidade só pode homologar e encaminhar para a gestão central o lote 100% completo de todos os seus setores subordinados. O sistema bloqueia entregas parciais ou com pendências não resolvidas.
-* **RN-05 (Autenticação Institucional Obrigatória):** O acesso interno para preenchimento, conferência e aprovação exige login institucional com a conta de rede do hospital, vinculando a autoria e data/hora de cada ação realizada.
-* **RN-06 (Transparência Ativa com Privacidade):** Na consulta pública ou da equipe, o sistema exibe apenas o nome completo, identificação funcional e a informação oficial aprovada, garantindo publicidade dos atos administrativos em conformidade com as diretrizes de privacidade.
+- **RN-01 (Identificação Institucional e Rastreabilidade Única):** Todo exame recebido deve possuir vínculo obrigatório com a requisição/prontuário do AGHU e receber um código anual sequencial único (`SAP-AAAA-NNN`) atrelado a um QR Code para leitura óptica em todas as etapas.
+- **RN-02 (Monitoramento Automático de SLAs — Meta 20 Dias e Lei 60 Dias):** O sistema deve calcular automaticamente a contagem regressiva de prazos a partir da entrada da amostra, destacando visualmente casos com suspeita de neoplasia (Oncologia — Lei nº 12.732/12 de 60 dias) e exames próximos do limite interno de 20 dias.
+- **RN-03 (Preservação e Imutabilidade do Histórico / Trilha de Auditoria):** Cada mudança de etapa na fila de trabalho (Recepção, Macroscopia, Processamento Técnico, Microscopia, Liberação e Arquivamento) grava um registro imutável contendo etapa, perfil, operador, data/hora e ação realizada.
+- **RN-04 (Vínculo Obrigatório no Ciclo de Congelação — CO para HP):** Exames intraoperatórios de Congelação (Solicitação 1) não podem ser dados como encerrados definitivamente sem a geração ou vinculação automática da pendência de reentrada para o exame Histopatológico definitivo (Solicitação 2).
+- **RN-05 (Autonomia Diagnóstica da Imunohistoquímica — IHQ):** Solicitações de Imunohistoquímica (originadas de casos internos do HC ou de blocos/lâminas externas) geram fluxo e laudo diagnóstico independentes, mantendo o vínculo referencial com o exame anatomopatológico de origem.
+- **RN-06 (Autenticação Institucional e Controle por Perfil):** O acesso ao sistema exige autenticação institucional vinculada aos perfis do hospital (AD/LDAP e grupos de acesso), restringindo ações críticas de bancada e de gestão conforme o papel do usuário.
 
 ---
 
 ## 8. Painel de Gestão e Indicadores Estratégicos (KPIs)
 
-O sistema deve disponibilizar painel gerencial hierárquico (cada chefia enxerga o seu escopo) com os seguintes indicadores de negócio:
-1. **Taxa de Cumprimento de Prazos:** Acompanhamento percentual e quantitativo em tempo real de quais setores e unidades já concluíram suas entregas dentro do calendário oficial, eliminando a necessidade de cobranças manuais por telefone.
-2. **Mapa de Pendências e Atrasos:** Listagem imediata de unidades ou setores que ainda estão com preenchimento aberto, rascunho pendente ou com prazo vencido, permitindo atuação pontual da liderança.
-3. **Detecção de Inconsistências:** Alerta visual automático para profissionais ativos que não possuem alocação ou registro no ciclo vigente, evitando esquecimentos ou desvios de planejamento.
+O sistema disponibiliza no **Painel SAP** os seguintes indicadores em tempo real para a gestão e equipe operacional:
+1. **Total no Sistema e Em Processamento:** Visão quantitativa imediata do volume total de exames ativos e de quantos encontram-se circulando nas bancadas técnicas.
+2. **Alerta Meta 20 Dias:** Contador em destaque (com alerta visual pulsante) indicando quantos exames estão em faixa crítica para atingir o prazo interno de 20 dias de liberação do laudo.
+3. **Lei 60 Dias (Oncologia):** Indicador dedicado exclusivamente aos exames com suspeita ou confirmação de neoplasia maligna, assegurando prioridade absoluta para cumprimento da legislação federal.
+4. **Concluídos e Arquivados:** Totalizador de exames cujo ciclo diagnóstico e arquivamento físico de lâminas/blocos foram devidamente finalizados e homologados.
 
 ---
 
 ## 9. Matriz de Pontos de Decisão (Gabinete / Gestão do Negócio)
 
-> *Itens que dependem de confirmação dos gestores do hospital antes da conclusão:*
+> *Itens de governança e operação acompanhados junto à gestão do SAP e SETISD:*
 
 | # | Ponto a Decidir | Impacto no Processo | Quem deve decidir? | Status / Definição |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | **Data Limite Oficial:** Até qual dia do período os setores devem fechar o preenchimento e assinar? | Define a regra do sistema para disparar alertas preventivos e travar edições intempestivas. | Gestão Central / Chefias | 🟡 Em definição |
-| **2** | **Substituição de Chefia:** Qual o critério para assinatura quando a chefia titular estiver de férias ou afastada? | Evita o travamento da homologação em bloco da unidade inteira por ausência de um único responsável. | Gestão da Área | 🟡 Em definição |
-| **3** | **Retificação pós-Homologação:** Qual é o rito formal para reabrir e corrigir dados já aprovados oficialmente? | Define se haverá solicitação formal de reabertura com justificativa gravada ou ajuste restrito à gestão central. | Gestão Central | 🟡 Em definição |
-
----
----
-
-# 📘 GUIA METODOLÓGICO: COMO ESTE DOCUMENTO SE INTERLIGA AOS DEMAIS ARQUIVOS DO PROJETO
-
-> **Apresentação Executiva para a Chefia:**  
-> Esta seção explica a lógica de engenharia e governança adotada pelo SETISD para conectar as necessidades de negócio da ponta à construção do software.
-
-### A Linha do Tempo: A Separação entre "Fase de Negócio" e "Fase de Engenharia"
-
-Em qualquer projeto de software hospitalar existem dois mundos que precisam se comunicar com perfeição:
-1. **O Mundo do Negócio (Chefias, Áreas Solicitantes, Governança, Direção):** Não devem ser expostos a termos técnicos de TI (bancos de dados, endpoints, JSON, status HTTP, docker, etc.). Eles precisam discutir *processos, dores reais, prazos, responsabilidades e regras*.
-2. **O Mundo da Engenharia (Desenvolvedores e Testes):** Precisam de tabelas relacionais, tipos de dados estritos, rotas de API seguras e casos de uso testáveis.
-
-Este documento (`00-validacao-negocio.md`) funciona como a **Ponte Oficial** entre esses dois mundos:
-
-```text
-               ┌────────────────────────────────────────────────────────┐
-               │         00-VALIDAÇÃO E FLUXO DE NEGÓCIO (ESTE ARQUIVO)  │
-FASE 1         │   Linguagem humana, fluxos e regras reais de negócio.  │
-(Negócio)      │   Validado e assinado pelas Chefias e Direção do HC.   │
-               └───────────────────────────┬────────────────────────────┘
-                                           │
-                 ┌─────────────────────────┴─────────────────────────┐
-                 ▼ (Uma vez aprovado, a TI desdobra tecnicamente)     ▼
-               ┌────────────────────────────────────────────────────────┐
-FASE 2         │            ARTEFATOS DE ESPECIFICAÇÃO TÉCNICA           │
-(Engenharia)   │   01-visao.md  →  02-requisitos.md  →  03-casos-uso.md │
-               │   04-modelo-dados.md  →  05-interfaces  →  SPEC.md     │
-               └────────────────────────────────────────────────────────┘
-```
-
----
-
-### Como cada seção deste documento alimenta a documentação técnica:
-
-| Seção deste Documento de Negócio | O que ela entrega para a documentação técnica? | Arquivo de Destino |
-| :--- | :--- | :--- |
-| **Seção 2 (O Problema que Queremos Resolver)** | Define a motivação institucional, os riscos do modelo atual e a justificativa do projeto. | [01-visao.md](01-visao.md) *(Problema e Escopo)* |
-| **Seção 3 (Como o Processo Funciona Hoje)** | Serve de base para mapear os processos manuais que serão substituídos e os dados legados. | [01-visao.md](01-visao.md) *(Cenário Atual)* |
-| **Seção 4 (O Que a Nova Solução Deve Entregar)** | Define os objetivos do produto e os ganhos práticos que orientam a entrega de valor. | [01-visao.md](01-visao.md) *(Visão de Futuro)* |
-| **Seção 5 (Como Será o Trabalho no Novo Sistema)** | Detalha as etapas práticas do usuário na tela, que viram os fluxos e cenários de uso do sistema. | [02-requisitos.md](02-requisitos.md) e [03-casos-uso.md](03-casos-uso.md) *(Casos de Uso e Fluxos)* |
-| **Seção 6 (Quem Participa do Processo)** | Define os perfis de acesso, permissões de cada papel e o modelo de autorização local. | [02-requisitos.md](02-requisitos.md) e [03-casos-uso.md](03-casos-uso.md) *(Atores e RBAC)* |
-| **Seção 7 (Regras de Negócio Inegociáveis)** | É convertida diretamente em requisitos funcionais estritos e validações de backend. | [02-requisitos.md](02-requisitos.md) *(Requisitos Funcionais - RFs)* |
-| **Seção 8 (Painel de Gestão e Indicadores)** | Dá origem às consultas analíticas de acompanhamento, relatórios e telas gerenciais. | [05-interfaces.md](05-interfaces.md) *(Protótipos e Dashboards)* |
-| **Seção 9 (Matriz de Pontos de Decisão)** | Orienta os parâmetros de configuração e regras que alimentam as tarefas de implementação. | [SPEC.md](SPEC.md) *(Definições e Tarefas)* |
-
----
-
-### A Regra de Ouro do Processo no SETISD:
-
-1. **Início do Projeto (Fase de Negócio):** O profissional de TI preenche este documento junto com os responsáveis pela área de negócio em reuniões de alinhamento, validando o problema real, os fluxos práticos e as decisões pendentes.
-2. **Desenvolvimento (Fase de Engenharia):** Com este documento aprovado pelas partes envolvidas, a equipe de desenvolvimento tem total clareza técnica para elaborar os artefatos de `01` a `06` e programar a solução com segurança e sem retrabalho.
-
-**Resultado:** O cliente hospitalar participa ativamente sem ser sobrecarregado com termos técnicos, e a equipe de TI constrói exatamente o que o hospital precisa.
+| **1** | **Integração de Pacientes Externos (Prefeituras):** Momento exato do disparo da requisição após criação do prontuário pela Regulação. | Elimina a planilha intermediária do Teams entre a Recepção do SAP e a Central de Marcação. | Chefia do SAP / Regulação / SETISD | 🟢 Definido (Consulta via AGHU Slave) |
+| **2** | **Faixa de Alerta Preventivo da Meta de 20 Dias:** Com quantos dias restantes o card do exame deve mudar para estado de alerta crítico? | Define a antecedência com que a chefia e os patologistas serão notificados sobre risco de atraso. | Chefia do SAP | 🟡 Em validação nos checkpoints |
+| **3** | **Fluxo de Logística Externa (A.C. Camargo):** Padronização do status de suspensão de SLA quando o bloco segue para laboratório de apoio externo. | Evita penalização indevida nos indicadores internos da equipe durante o trânsito externo da amostra. | Chefia do SAP / DADT | 🟡 Em definição |
