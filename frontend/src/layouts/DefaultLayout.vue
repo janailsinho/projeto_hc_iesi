@@ -1,162 +1,154 @@
 <template>
-  <div class="relative h-screen overflow-hidden md:flex">
-    <!-- Mobile Menu Header -->
-    <div class="bg-paper-sidebar text-gray-100 flex justify-between md:hidden shrink-0">
-      <router-link to="/" class="block p-4 text-white font-bold">{{ SYSTEM_TITLE }}</router-link>
-      <button @click="sidebarOpen = !sidebarOpen" class="p-4 focus:outline-none focus:bg-paper-active-link">
-        <Bars3Icon class="h-6 w-6" />
-      </button>
-    </div>
-
-    <!-- Sidebar (Expansível / Recolhível) -->
-    <aside 
+  <div class="flex h-screen bg-slate-100 font-sans overflow-hidden">
+    <!-- Menu Lateral Esquerdo Único -->
+    <aside
       :class="[
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-        isCollapsed ? 'md:w-20' : 'md:w-64'
-      ]" 
-      class="bg-paper-sidebar text-gray-100 pt-7 pb-2 px-2 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 transition-all duration-300 ease-in-out z-20 h-full shrink-0 flex flex-col justify-between"
+        'bg-neutral-900 text-white transition-all duration-300 flex flex-col justify-between z-20 shadow-xl',
+        isSidebarOpen ? 'w-64' : 'w-20'
+      ]"
     >
       <div>
-        <!-- Clique em "Nome do Sistema" recolhe/expande a barra lateral -->
-        <div 
-          @click="toggleSidebar" 
-          title="Clique para recolher / expandir o menu"
-          class="cursor-pointer text-white flex items-center space-x-3 px-3 mb-6 hover:opacity-90 transition duration-150 group"
-        >
-          <CubeTransparentIcon class="h-8 w-8 shrink-0 group-hover:scale-105 transition-transform" />
-          <span v-if="!isCollapsed" class="text-xl font-extrabold leading-snug break-words select-none">
+        <div class="flex items-center gap-3 p-4 border-b border-neutral-800">
+          <button
+            @click="toggleSidebar"
+            class="text-gray-300 hover:text-white focus:outline-none p-1 rounded-lg hover:bg-neutral-800 transition"
+            title="Alternar Menu"
+          >
+            <CubeTransparentIcon class="w-6 h-6" />
+          </button>
+          <span v-if="isSidebarOpen" class="font-extrabold text-base tracking-wide leading-tight text-emerald-400">
             {{ SYSTEM_TITLE }}
           </span>
         </div>
 
-        <div class="px-3 my-4">
-          <div class="border-t border-white border-opacity-20"></div>
-        </div>
-
-        <!-- Links de Navegação -->
-        <nav class="space-y-2">
-          <router-link 
-            to="/" 
-            :title="isCollapsed ? 'Início' : ''"
-            :class="[isCollapsed ? 'justify-center px-2' : 'px-4']"
-            class="flex items-center space-x-3 py-2.5 rounded transition duration-200 hover:bg-paper-active-link hover:text-white"
+        <!-- Navegação Principal do SISPATO (Sem o bloco Início) -->
+        <nav class="mt-4 px-3 space-y-1.5">
+          <router-link
+            to="/sap"
+            active-class="bg-neutral-800 text-emerald-300 font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-400 hover:bg-neutral-800 hover:text-emerald-300 transition-colors"
           >
-            <HomeIcon class="h-6 w-6 shrink-0"/>
-            <span v-if="!isCollapsed" class="truncate">Início</span>
+            <BeakerIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Painel SAP</span>
           </router-link>
 
-          <!-- Atalho para o Painel SAP -->
-          <router-link 
-            to="/sap" 
-            :title="isCollapsed ? 'Painel SAP' : ''"
-            :class="[isCollapsed ? 'justify-center px-2' : 'px-4']"
-            class="flex items-center space-x-3 py-2.5 rounded transition duration-200 hover:bg-paper-active-link hover:text-white text-emerald-300 font-semibold"
+          <router-link
+            to="/recepcao"
+            active-class="bg-neutral-800 text-emerald-300 font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-400 hover:bg-neutral-800 hover:text-emerald-300 transition-colors"
           >
-            <BeakerIcon class="h-6 w-6 shrink-0" />
-            <span v-if="!isCollapsed" class="truncate">Painel SAP</span>
+            <ClipboardDocumentCheckIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Recepção / Triagem</span>
           </router-link>
 
-          <router-link 
-            to="/componentes" 
-            :title="isCollapsed ? 'Componentes' : ''"
-            :class="[isCollapsed ? 'justify-center px-2' : 'px-4']"
-            class="flex items-center space-x-3 py-2.5 rounded transition duration-200 hover:bg-paper-active-link hover:text-white"
+          <router-link
+            to="/componentes"
+            active-class="bg-neutral-800 text-white font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 hover:bg-neutral-800 hover:text-white transition-colors"
           >
-            <CubeIcon class="h-6 w-6 shrink-0" />
-            <span v-if="!isCollapsed" class="truncate">Componentes</span>
+            <CubeIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Componentes</span>
           </router-link>
 
-          <router-link 
-            v-if="authStore.isAuthenticated" 
-            to="/exemplo" 
-            :title="isCollapsed ? 'Exemplo' : ''"
-            :class="[isCollapsed ? 'justify-center px-2' : 'px-4']"
-            class="flex items-center space-x-3 py-2.5 rounded transition duration-200 hover:bg-paper-active-link hover:text-white"
+          <router-link
+            to="/exemplo"
+            active-class="bg-neutral-800 text-white font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 hover:bg-neutral-800 hover:text-white transition-colors"
           >
-            <DocumentTextIcon class="h-6 w-6 shrink-0" />
-            <span v-if="!isCollapsed" class="truncate">Exemplo</span>
+            <DocumentTextIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Exemplo</span>
           </router-link>
-          
-          <router-link 
-            v-if="authStore.isAuthenticated" 
-            to="/configuracoes" 
-            :title="isCollapsed ? 'Configurações' : ''"
-            :class="[isCollapsed ? 'justify-center px-2' : 'px-4']"
-            class="flex items-center space-x-3 py-2.5 rounded transition duration-200 hover:bg-paper-active-link hover:text-white"
+
+          <router-link
+            to="/configuracoes"
+            active-class="bg-neutral-800 text-white font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 hover:bg-neutral-800 hover:text-white transition-colors"
           >
-            <Cog6ToothIcon class="h-6 w-6 shrink-0"/>
-            <span v-if="!isCollapsed" class="truncate">Configurações</span>
+            <Cog6ToothIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Configurações</span>
           </router-link>
         </nav>
       </div>
 
-      <!-- Rodapé de Versão da Sidebar -->
-      <div v-if="!isCollapsed" class="px-4 pt-3 pb-1 border-t border-white/10 text-xs text-gray-400 mt-auto truncate transition-opacity duration-200">
-        <p class="font-semibold text-gray-200 truncate">{{ APP_NAME }}</p>
-        <p class="text-[11px] text-gray-400 truncate">Versão {{ APP_VERSION }} | HC-UFPE</p>
-      </div>
-      <div v-else class="px-2 pt-3 pb-1 border-t border-white/10 text-[10px] text-center text-gray-400 mt-auto">
-        v{{ APP_VERSION }}
+      <div v-if="isSidebarOpen" class="p-4 border-t border-neutral-800 text-[11px] text-gray-400">
+        <p class="font-semibold text-gray-300">Framework SETISD</p>
+        <p>SISPATO v{{ APP_VERSION }} | HC-UFPE</p>
       </div>
     </aside>
 
-    <!-- Content -->
-    <div class="flex-1 flex flex-col bg-paper-bg overflow-y-auto h-full">
-      <header class="flex justify-between items-center p-6 bg-white/80 backdrop-blur-md border-b border-gray-300 sticky top-0 z-10">
-        <div>
-          <h1 class="text-2xl font-semibold text-paper-text">{{ $route.name }}</h1>
-        </div>
-        <div>
-          <router-link v-if="!authStore.isAuthenticated" to="/login">
-            <Button variant="primary">
-              <template #icon>
-                <ArrowRightOnRectangleIcon class="h-5 w-5" />
-              </template>
-              Login
-            </Button>
-          </router-link>
-          <ProfileDropdown v-else />
+    <!-- Conteúdo Principal -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-100">
+      <header class="bg-white shadow-sm border-b border-slate-200 h-16 flex items-center justify-between px-6 z-10 shrink-0">
+        <h2 class="text-lg font-bold text-slate-800 tracking-tight">
+          {{ route.name || 'SISPATO' }}
+        </h2>
+
+        <div class="relative">
+          <button
+            @click="showUserMenu = !showUserMenu"
+            class="flex items-center gap-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+          >
+            <UserCircleIcon class="w-8 h-8 text-slate-600" />
+          </button>
+
+          <div
+            v-if="showUserMenu"
+            class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-3 px-4 z-50"
+          >
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">
+              <UserCircleIcon class="w-10 h-10 text-slate-400" />
+              <div>
+                <p class="font-bold text-slate-800 text-sm">admin</p>
+                <p class="text-xs text-slate-500">Gestor / Preceptor SAP</p>
+              </div>
+            </div>
+            <div class="space-y-1.5 text-xs text-slate-600 mb-3">
+              <p><strong class="text-slate-400 uppercase text-[10px] block">Setor</strong> Unidade de Anatomia Patológica</p>
+              <p><strong class="text-slate-400 uppercase text-[10px] block">Hospital</strong> HC-UFPE / EBSERH</p>
+            </div>
+            <button
+              @click="logout"
+              class="w-full text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
+            >
+              Sair da Conta
+            </button>
+          </div>
         </div>
       </header>
-      <main class="flex-1">
-        <div class="container py-4 md:py-6">
-          <router-view />
-        </div>
+
+      <!-- View principal -->
+      <main class="flex-1 overflow-y-auto p-6 bg-slate-100">
+        <router-view />
       </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { SYSTEM_TITLE, APP_VERSION } from '../config/version'
 import {
-  HomeIcon,
+  BeakerIcon,
+  ClipboardDocumentCheckIcon,
   CubeIcon,
   DocumentTextIcon,
   Cog6ToothIcon,
-  CubeTransparentIcon,
-  Bars3Icon,
-  ArrowRightOnRectangleIcon,
-  BeakerIcon,
-} from '@heroicons/vue/24/outline';
-import ProfileDropdown from '../components/ProfileDropdown.vue';
-import Button from '../components/Button.vue';
-import { useAuthStore } from '../stores/auth';
-import { APP_VERSION, APP_NAME, SYSTEM_TITLE } from '../config/version';
+  UserCircleIcon,
+  CubeTransparentIcon
+} from '@heroicons/vue/24/outline'
 
-const sidebarOpen = ref(false);
-const isCollapsed = ref(false);
-
-const route = useRoute();
-const authStore = useAuthStore();
+const route = useRoute()
+const router = useRouter()
+const isSidebarOpen = ref(true)
+const showUserMenu = ref(false)
 
 const toggleSidebar = () => {
-  isCollapsed.value = !isCollapsed.value;
-};
+  isSidebarOpen.value = !isSidebarOpen.value
+}
 
-// Close mobile sidebar on route change
-watch(() => route.path, () => {
-  sidebarOpen.value = false;
-});
+const logout = () => {
+  showUserMenu.value = false
+  router.push('/login')
+}
 </script>

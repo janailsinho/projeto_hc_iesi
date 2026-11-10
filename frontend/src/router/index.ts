@@ -1,71 +1,60 @@
-import { createRouter, createWebHistory, NavigationGuardNext } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
-import Home from '../views/Home.vue';
-import Login from '../views/Login.vue';
-import Configuracoes from '../views/Configuracoes.vue';
-
-import Exemplos from '../views/Exemplos.vue';
-import Pacientes from '../views/Pacientes.vue';
-
-import SAPDashboardView from '../views/SAPDashboardView.vue'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Início',
-    component: Home,
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login,
-    meta: { layout: 'LoginLayout' },
-  },
-  {
-    path: '/componentes',
-    name: 'Componentes',
-    component: Exemplos,
-  },
-  {
-    path: '/exemplo',
-    name: 'Exemplo',
-    component: Pacientes,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/configuracoes',
-    name: 'Configuracoes',
-    component: Configuracoes,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/sap',
-    name: 'SAPDashboard',
-    component: SAPDashboardView
-  }
-];
+import { createRouter, createWebHistory } from 'vue-router'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
+import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
-  linkActiveClass: 'bg-paper-active-link',
-  linkExactActiveClass: 'bg-paper-active-link',
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/',
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          name: 'Início',
+          component: Home,
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'sap',
+          name: 'Painel SAP',
+          component: () => import('../views/SAPDashboardView.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'recepcao',
+          name: 'Recepção / Triagem (AGHU)',
+          component: () => import('../views/SAPRecepcaoView.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'componentes',
+          name: 'Componentes',
+          component: () => import('../views/Exemplos.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'exemplo',
+          name: 'Exemplo',
+          component: () => import('../views/Pacientes.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'configuracoes',
+          name: 'Configuracoes',
+          component: () => import('../views/Configuracoes.vue'),
+          meta: { requiresAuth: false }
+        }
+      ]
+    }
+  ]
+})
 
-router.beforeEach((to, _from, next: NavigationGuardNext) => {
-  const authStore = useAuthStore();
-
-  // Força o bypass de autenticação para a apresentação do SAP, home e login
-  if (to.path.startsWith('/sap') || to.path === '/' || to.path === '/login') {
-    return next();
-  }
-
-  // Simula liberação automática para rotas protegidas durante a demonstração
-  if (to.meta.requiresAuth) {
-    return next();
-  }
-
-  next();
-});
-
-export default router;
+export default router
