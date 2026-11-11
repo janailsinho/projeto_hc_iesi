@@ -3,7 +3,8 @@ import { useAuthStore } from '../stores/auth';
 import router from '../router';
 
 const api = axios.create({
-  baseURL: '/', // Adjust if your API is on a different host
+  // Utiliza a variável de ambiente da Vercel ou o link direto do backend hospedado no Render
+  baseURL: import.meta.env.VITE_API_URL || 'https://sispato-api-mhzb.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   }
