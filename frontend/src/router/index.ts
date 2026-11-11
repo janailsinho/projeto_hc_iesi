@@ -4,7 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 
 const router = createRouter({
-  history: createWebHistory('/'), // Corrigido para evitar problemas de build na Vercel
+  history: createWebHistory('/'),
   routes: [
     {
       path: '/login',
