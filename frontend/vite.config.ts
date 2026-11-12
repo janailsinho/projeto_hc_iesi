@@ -11,7 +11,7 @@ export default defineConfig({
   base: '/',
   plugins: [vue(), tailwindcss()],
   build: {
-    outDir: path.resolve(__dirname, '../src/static/dist'),
+    outDir: 'dist', // Alterado para gerar na pasta padrão que a Vercel espera
     emptyOutDir: true,
   },
   server: {
