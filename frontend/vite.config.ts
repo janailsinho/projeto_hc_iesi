@@ -6,12 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// https://vitejs.dev/config/
 export default defineConfig({
   base: '/',
   plugins: [vue(), tailwindcss()],
   build: {
-    outDir: 'dist', // Alterado para gerar na pasta padrão que a Vercel espera
+    outDir: 'dist',
     emptyOutDir: true,
   },
   server: {
