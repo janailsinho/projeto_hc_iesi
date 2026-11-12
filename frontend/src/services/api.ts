@@ -61,7 +61,8 @@ api.interceptors.response.use(
 
       try {
         console.log('Access token expired. Attempting to refresh...');
-        const { data } = await axios.post('/api/token/refresh');
+        // Corrigido para utilizar a instância 'api' e respeitar o baseURL do Render
+        const { data } = await api.post('/api/token/refresh');
         
         // Set the new token in the store
         authStore.setToken(data.access_token);
