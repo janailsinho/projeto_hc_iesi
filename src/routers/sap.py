@@ -21,6 +21,34 @@ class TriagemRequest(BaseModel):
     observacoes: Optional[str] = None
     prioridade_oncologica: bool = False
 
+@router.get("/exames")
+async def listar_exames_geral():
+    """
+    Lista todas as solicitações/exames do CSV para preencher o Painel SAP principal na Vercel.
+    """
+    csv_path = get_csv_path("vw_solicitacao_atualizado.csv")
+    exames = []
+    
+    try:
+        if csv_path.exists():
+            with open(csv_path, mode='r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    exames.append({
+                        "codigo_sap": f"HP {row.get('solicitacao', '0000')[-4:]}/26",
+                        "solicitacao_aghu": row.get("solicitacao"),
+                        "paciente": row.get("paciente", "Não informado"),
+                        "prontuario": row.get("prontuario", "N/D"),
+                        "tipo_exame": row.get("material", "Histopatológico"),
+                        "origem": row.get("origem", "Ambulatório"),
+                        "etapa_atual": "Recepção / Triagem",
+                        "tempo_decorrido": "2 dias"
+                    })
+    except Exception as e:
+        print(f"Erro ao ler exames: {e}")
+
+    return exames
+
 @router.get("/solicitacoes/{numero_solicitacao}/amostras")
 async def obter_amostras_solicitacao(numero_solicitacao: str):
     """
@@ -35,8 +63,6 @@ async def obter_amostras_solicitacao(numero_solicitacao: str):
         with open(csv_path, mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # O campo da solicitação no CSV pode variar de nome conforme o cabeçalho exato
-                # Vamos verificar as chaves comuns
                 sol_val = row.get("solicitacao") or row.get("SOLICITACAO") or list(row.values())[0]
                 
                 if str(sol_val).strip() == str(numero_solicitacao).strip():
@@ -49,7 +75,6 @@ async def obter_amostras_solicitacao(numero_solicitacao: str):
                             "pre_laudo_status": "Em Andamento / Rascunho Disponível para Consulta"
                         }
                     
-                    # Adiciona a amostra desta linha específica
                     amostras_encontradas.append({
                         "id_amostra": f"{numero_solicitacao}-{len(amostras_encontradas) + 1:02d}",
                         "descricao": row.get("material") or row.get("MATERIAL") or row.get("descricao") or "Frasco / Amostra Recebida",
@@ -69,6 +94,10 @@ async def obter_amostras_solicitacao(numero_solicitacao: str):
 
 @router.post("/solicitacoes/triagem")
 async def processar_triagem_com_rejeicao(dados: TriagemRequest):
+    """
+    Processa a triagem física validando múltiplas amostras, aceites ou rejeições 
+    com justificativa, e gerando o código SAP oficial.
+    """
     confirmadas = [a for a in dados.amostras if a.status_recebimento == 'Confirmado']
     rejeitadas = [a for a in dados.amostras if a.status_recebimento == 'Rejeitado']
 
