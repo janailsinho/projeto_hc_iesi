@@ -24,8 +24,10 @@ async def login(
     try:
         # Tenta a autenticação normal via AD/Mock
         user = await run_in_threadpool(auth_handler.authenticate_user, form_data.username, form_data.password)
+    except HTTPException:
+        raise
     except Exception:
-        # BYPASS DE DEMONSTRAÇÃO: Se falhar (ex: AD offline), cria um utilizador admin válido para a apresentação
+        # BYPASS DE DEMONSTRAÇÃO: Se falhar por erro de conexão externa (ex: AD offline), cria um utilizador admin
         user = {
             "username": form_data.username or "admin_sap",
             "name": "Administrador Apresentação SAP",

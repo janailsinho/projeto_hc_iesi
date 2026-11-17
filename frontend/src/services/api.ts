@@ -2,15 +2,19 @@ import axios from 'axios';
 import { useAuthStore } from '../stores/auth';
 import router from '../router';
 
+// Em desenvolvimento local (localhost / 127.0.0.1) usa o proxy do Vite ('') para o backend local (:8000);
+// Em produção (Vercel) aponta automaticamente para o backend hospedado no Render.
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 const api = axios.create({
-  // URL direta para o backend hospedado no Render
-  baseURL: 'https://sispato-api-mhzb.onrender.com',
+  baseURL: isLocalhost ? '' : 'https://sispato-api-mhzb.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   }
 });
 
-// Request interceptor to add the access token
 api.interceptors.request.use(config => {
   const authStore = useAuthStore();
   const token = authStore.accessToken;
@@ -36,14 +40,12 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Response error interceptor to handle expired tokens
 api.interceptors.response.use(
-  response => response, // Simply return successful responses
+  response => response,
   async error => {
     const originalRequest = error.config;
     const authStore = useAuthStore();
 
-    // Check if the error is 401 and it's not a retry request
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise(function(resolve, reject) {
@@ -56,34 +58,24 @@ api.interceptors.response.use(
         });
       }
 
-      originalRequest._retry = true; // Mark it as a retry
+      originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        console.log('Access token expired. Attempting to refresh...');
-        // Corrigido para utilizar a instância 'api' e respeitar o baseURL do Render
         const { data } = await api.post('/api/token/refresh');
-        
-        // Set the new token in the store
         authStore.setToken(data.access_token);
-        
-        // Update the authorization header of the original request
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
-        
         processQueue(null, data.access_token);
-        // Retry the original request
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        console.error('Unable to refresh token. Logging out.', refreshError);
-        authStore.logout(router); // If refresh fails, logout the user
+        authStore.logout(router);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    // For other errors, just reject the promise
     return Promise.reject(error);
   }
 );

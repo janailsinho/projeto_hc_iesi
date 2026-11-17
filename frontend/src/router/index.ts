@@ -30,8 +30,20 @@ const router = createRouter({
         },
         {
           path: 'recepcao',
-          name: 'Recepção / Triagem (AGHU)',
+          name: 'Recepção / Triagem (HC & SUS)',
           component: () => import('../views/SAPRecepcaoView.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'bancadas',
+          name: 'Bancadas (Macro / Proc / Micro)',
+          component: () => import('../views/SAPBancadasView.vue'),
+          meta: { requiresAuth: false }
+        },
+        {
+          path: 'acervo',
+          name: 'Rastreio QR, Acervo & Impressoras',
+          component: () => import('../views/SAPAcervoView.vue'),
           meta: { requiresAuth: false }
         },
         {

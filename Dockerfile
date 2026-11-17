@@ -35,8 +35,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia código-fonte do backend e migrações
+# Copia código-fonte do backend, pasta de dados CSV e migrações
 COPY src ./src
+COPY data ./data
 COPY alembic ./alembic
 COPY alembic.ini .
 

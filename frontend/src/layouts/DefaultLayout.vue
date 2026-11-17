@@ -21,7 +21,7 @@
           </span>
         </div>
 
-        <!-- Navegação Principal do SISPATO (Sem o bloco Início) -->
+        <!-- Navegação Principal do SISPATO -->
         <nav class="mt-4 px-3 space-y-1.5">
           <router-link
             to="/sap"
@@ -39,6 +39,24 @@
           >
             <ClipboardDocumentCheckIcon class="w-5 h-5 shrink-0" />
             <span v-if="isSidebarOpen" class="text-sm">Recepção / Triagem</span>
+          </router-link>
+
+          <router-link
+            to="/bancadas"
+            active-class="bg-neutral-800 text-emerald-300 font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-400 hover:bg-neutral-800 hover:text-emerald-300 transition-colors"
+          >
+            <CpuChipIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Bancadas (Macro/Proc/Micro)</span>
+          </router-link>
+
+          <router-link
+            to="/acervo"
+            active-class="bg-neutral-800 text-emerald-300 font-semibold"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-400 hover:bg-neutral-800 hover:text-emerald-300 transition-colors"
+          >
+            <MagnifyingGlassCircleIcon class="w-5 h-5 shrink-0" />
+            <span v-if="isSidebarOpen" class="text-sm">Acervo, QR & Impressoras</span>
           </router-link>
 
           <router-link
@@ -83,41 +101,46 @@
           {{ route.name || 'SISPATO' }}
         </h2>
 
-        <div class="relative">
-          <button
-            @click="showUserMenu = !showUserMenu"
-            class="flex items-center gap-2 text-slate-600 hover:text-slate-900 focus:outline-none"
-          >
-            <UserCircleIcon class="w-8 h-8 text-slate-600" />
-          </button>
-
-          <div
-            v-if="showUserMenu"
-            class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-3 px-4 z-50"
-          >
-            <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">
-              <UserCircleIcon class="w-10 h-10 text-slate-400" />
-              <div>
-                <p class="font-bold text-slate-800 text-sm">admin</p>
-                <p class="text-xs text-slate-500">Gestor / Preceptor SAP</p>
-              </div>
-            </div>
-            <div class="space-y-1.5 text-xs text-slate-600 mb-3">
-              <p><strong class="text-slate-400 uppercase text-[10px] block">Setor</strong> Unidade de Anatomia Patológica</p>
-              <p><strong class="text-slate-400 uppercase text-[10px] block">Hospital</strong> HC-UFPE / EBSERH</p>
-            </div>
+        <div class="flex items-center gap-4">
+          <span class="hidden sm:inline-block text-xs text-slate-500">
+            Sessão ativa (Inatividade máx: {{ minutosInatividadeMax }} min — RF004)
+          </span>
+          <div class="relative">
             <button
-              @click="logout"
-              class="w-full text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
+              @click="showUserMenu = !showUserMenu"
+              class="flex items-center gap-2 text-slate-600 hover:text-slate-900 focus:outline-none"
             >
-              Sair da Conta
+              <UserCircleIcon class="w-8 h-8 text-slate-600" />
             </button>
+
+            <div
+              v-if="showUserMenu"
+              class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-3 px-4 z-50"
+            >
+              <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">
+                <UserCircleIcon class="w-10 h-10 text-slate-400" />
+                <div>
+                  <p class="font-bold text-slate-800 text-sm">{{ authStore.user?.username || 'admin' }}</p>
+                  <p class="text-xs text-slate-500">Gestor / Preceptor SAP</p>
+                </div>
+              </div>
+              <div class="space-y-1.5 text-xs text-slate-600 mb-3">
+                <p><strong class="text-slate-400 uppercase text-[10px] block">Setor</strong> Unidade de Anatomia Patológica</p>
+                <p><strong class="text-slate-400 uppercase text-[10px] block">Hospital</strong> HC-UFPE / EBSERH</p>
+              </div>
+              <button
+                @click="logout"
+                class="w-full text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
+              >
+                Sair da Conta (RF003)
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       <!-- View principal -->
-      <main class="flex-1 overflow-y-auto p-6 bg-slate-100">
+      <main class="flex-1 overflow-y-auto bg-slate-100">
         <router-view />
       </main>
     </div>
@@ -125,12 +148,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import { SYSTEM_TITLE, APP_VERSION } from '../config/version'
 import {
   BeakerIcon,
   ClipboardDocumentCheckIcon,
+  CpuChipIcon,
+  MagnifyingGlassCircleIcon,
   CubeIcon,
   DocumentTextIcon,
   Cog6ToothIcon,
@@ -140,15 +166,40 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 const isSidebarOpen = ref(true)
 const showUserMenu = ref(false)
+const minutosInatividadeMax = 30
+let timerInatividade: ReturnType<typeof setTimeout> | null = null
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
-const logout = () => {
+const logout = async () => {
   showUserMenu.value = false
-  router.push('/login')
+  await authStore.logout(router)
 }
+
+// Expiração automática de sessão por inatividade configurável (RF004)
+const resetarTimerInatividade = () => {
+  if (timerInatividade) clearTimeout(timerInatividade)
+  timerInatividade = setTimeout(() => {
+    if (authStore.isAuthenticated) {
+      authStore.logout(router)
+    }
+  }, minutosInatividadeMax * 60 * 1000)
+}
+
+const eventosAtividade = ['mousemove', 'keydown', 'click', 'scroll']
+
+onMounted(() => {
+  eventosAtividade.forEach(ev => window.addEventListener(ev, resetarTimerInatividade))
+  resetarTimerInatividade()
+})
+
+onUnmounted(() => {
+  eventosAtividade.forEach(ev => window.removeEventListener(ev, resetarTimerInatividade))
+  if (timerInatividade) clearTimeout(timerInatividade)
+})
 </script>

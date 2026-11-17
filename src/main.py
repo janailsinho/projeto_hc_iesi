@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from .resources.database import DatabaseManager, Base
+from .models import refresh_token, audit_log, sap_models  # noqa: F401 - registra todos os modelos no metadata
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
