@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-slate-50 p-6 space-y-6">
+  <div class="min-h-screen bg-slate-50 p-3 sm:p-6 space-y-4 sm:space-y-6">
     <!-- Cabeçalho da Tela de Recepção -->
-    <header class="flex flex-col justify-between gap-4 lg:flex-row lg:items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+    <header class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
       <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-900 tracking-tight">
+        <h1 class="text-lg sm:text-2xl md:text-3xl font-extrabold text-blue-900 tracking-tight">
           Recepção e Triagem de Amostras (HC / AGHU & SUS)
         </h1>
         <p class="text-sm text-slate-600 mt-1">

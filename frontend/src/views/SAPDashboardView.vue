@@ -1,73 +1,73 @@
 <template>
-  <div class="p-6 space-y-6">
+  <div class="p-3 sm:p-6 space-y-4 sm:space-y-6">
     <!-- Cabeçalho do Painel SAP -->
-    <header class="flex flex-col justify-between gap-4 lg:flex-row lg:items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+    <header class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
       <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-900 tracking-tight">
+        <h1 class="text-lg sm:text-2xl md:text-3xl font-extrabold text-blue-900 tracking-tight leading-snug">
           HC-UFPE / EBSERH - Serviço de Anatomia Patológica (SAP)
         </h1>
-        <p class="text-sm text-slate-600 mt-1">
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
           SISPATO — Monitoramento em Tempo Real de Amostras, Subprodutos, Laudos Prévios, SISCAN e Prazos Legais
         </p>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2">
         <router-link
           to="/recepcao"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition text-sm">
+          class="text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3.5 py-2 rounded-lg shadow transition text-xs sm:text-sm">
           + Receber Amostra (AGHU / SUS)
         </router-link>
         <router-link
           to="/bancadas"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition text-sm">
+          class="text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-lg shadow transition text-xs sm:text-sm">
           🔬 Bancadas (Macro / Proc / Micro)
         </router-link>
         <button
           @click="carregarDados()"
-          class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2 text-sm">
+          class="justify-center bg-blue-700 hover:bg-blue-800 text-white font-medium px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2 text-xs sm:text-sm">
           🔄 Atualizar Painel
         </button>
       </div>
     </header>
 
-    <!-- Indicadores / KPIs Estratégicos -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-600">
-        <span class="text-xs font-semibold uppercase text-slate-400">Total no Sistema</span>
-        <p class="text-2xl font-bold text-slate-800 mt-1">{{ kpis.total_exames || 0 }}</p>
-        <span class="text-[11px] text-blue-700 font-semibold">
-          {{ kpis.recebidos_sap_local || 0 }} recebidos nas bancadas SAP
+    <!-- Indicadores / KPIs Estratégicos (2 colunas no celular, 6 no desktop) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-blue-600">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Total no Sistema</span>
+        <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5">{{ kpis.total_exames || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-blue-700 font-semibold">
+          {{ kpis.recebidos_sap_local || 0 }} nas bancadas
         </span>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-amber-500">
-        <span class="text-xs font-semibold uppercase text-slate-400">Em Processamento</span>
-        <p class="text-2xl font-bold text-amber-600 mt-1">{{ kpis.em_andamento || 0 }}</p>
-        <span class="text-[11px] text-slate-500">Fila ativa do laboratório</span>
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-amber-500">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Em Processamento</span>
+        <p class="text-xl sm:text-2xl font-bold text-amber-600 mt-0.5">{{ kpis.em_andamento || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-slate-500">Fila ativa</span>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-600">
-        <span class="text-xs font-semibold uppercase text-slate-400">Congelação / Urgentes</span>
-        <p class="text-2xl font-bold text-red-600 mt-1">{{ kpis.congelacoes_urgentes || 0 }}</p>
-        <span class="text-[11px] text-red-700 font-semibold">Prioridade máxima no topo</span>
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-red-600">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Congelação / Urg.</span>
+        <p class="text-xl sm:text-2xl font-bold text-red-600 mt-0.5">{{ kpis.congelacoes_urgentes || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-red-700 font-semibold">No topo da fila</span>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-rose-600">
-        <span class="text-xs font-semibold uppercase text-slate-400">Alerta Prazo (≥15d)</span>
-        <p class="text-2xl font-bold text-rose-600 mt-1">{{ kpis.alerta_meta_20_dias || 0 }}</p>
-        <span class="text-[11px] text-slate-500">Meta interna: 20 dias</span>
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-rose-600">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Alerta Prazo (≥15d)</span>
+        <p class="text-xl sm:text-2xl font-bold text-rose-600 mt-0.5">{{ kpis.alerta_meta_20_dias || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-slate-500">Meta: 20 dias</span>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-purple-600">
-        <span class="text-xs font-semibold uppercase text-slate-400">Casos Oncológicos</span>
-        <p class="text-2xl font-bold text-purple-700 mt-1">{{ kpis.monitorados_lei_60_dias || 0 }}</p>
-        <span class="text-[11px] text-purple-700 font-semibold">Lei Federal 60 Dias</span>
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-purple-600">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Casos Oncológicos</span>
+        <p class="text-xl sm:text-2xl font-bold text-purple-700 mt-0.5">{{ kpis.monitorados_lei_60_dias || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-purple-700 font-semibold">Lei 60 Dias</span>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-emerald-600">
-        <span class="text-xs font-semibold uppercase text-slate-400">Concluídos e Liberados</span>
-        <p class="text-2xl font-bold text-emerald-600 mt-1">{{ kpis.concluidos || 0 }}</p>
-        <span class="text-[11px] text-slate-500">SISCAN pend.: {{ kpis.pendentes_siscan || 0 }}</span>
+      <div class="bg-white p-3 sm:p-4 rounded-xl shadow border-l-4 border-emerald-600">
+        <span class="text-[10px] sm:text-xs font-semibold uppercase text-slate-400 block">Concluídos</span>
+        <p class="text-xl sm:text-2xl font-bold text-emerald-600 mt-0.5">{{ kpis.concluidos || 0 }}</p>
+        <span class="text-[10px] sm:text-[11px] text-slate-500">SISCAN: {{ kpis.pendentes_siscan || 0 }}</span>
       </div>
     </div>
 
     <!-- Lista de Exames em Tempo Real -->
-    <div class="bg-white rounded-xl shadow p-6">
+    <div class="bg-white rounded-xl shadow p-3.5 sm:p-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
           <span>📋</span> Fila de Exames por Etapa do Processo
@@ -118,7 +118,62 @@
         </div>
       </form>
 
-      <div class="overflow-x-auto">
+      <!-- VISUALIZAÇÃO EM CARDS PARA CELULAR (md:hidden) -->
+      <div class="md:hidden space-y-3">
+        <div
+          v-for="exame in exames"
+          :key="`mob-${exame.codigo_sap}-${exame.codigo_solicitacao}`"
+          :class="[
+            'p-3.5 rounded-xl border text-xs space-y-2',
+            exame.sigla_exame === 'CO' || exame.urgente ? 'bg-red-50/50 border-red-300' : 'bg-slate-50 border-slate-200',
+            exame.recebido_no_sap ? 'border-l-4 border-l-emerald-500' : ''
+          ]"
+        >
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <span class="font-mono font-extrabold text-blue-900 text-sm">{{ exame.codigo_sap }}</span>
+              <span
+                v-if="exame.sigla_exame === 'CO' || exame.urgente"
+                class="ml-1.5 px-1.5 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded"
+              >
+                URGENTE
+              </span>
+              <p class="font-bold text-slate-800 mt-0.5">{{ exame.nome_paciente }} (Pront: {{ exame.prontuario_paciente || 'SUS' }})</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-900 shrink-0">
+              {{ exame.etapa_atual }}
+            </span>
+          </div>
+
+          <p class="text-slate-600">
+            <strong>{{ exame.tipo_exame }} ({{ exame.sigla_exame }})</strong> • {{ exame.quantidade_amostras }} amostra(s) — {{ exame.descricao_material }}
+          </p>
+
+          <div class="flex flex-wrap justify-between items-center gap-2 text-[11px] text-slate-500 border-t border-slate-200 pt-2">
+            <span :class="exame.dias_decorridos >= 15 ? 'text-rose-600 font-bold' : 'font-semibold text-slate-700'">
+              ⏱️ {{ exame.dias_decorridos }}º dia (Meta {{ exame.meta_dias_limite }}d)
+            </span>
+            <div class="flex gap-1.5">
+              <button
+                @click="abrirDetalhes(exame)"
+                class="bg-blue-700 text-white font-semibold px-2.5 py-1 rounded text-[11px]"
+              >
+                🌳 Árvore
+              </button>
+              <router-link
+                v-if="!exame.recebido_no_sap"
+                :to="`/recepcao?solicitacao=${exame.codigo_solicitacao}`"
+                class="bg-emerald-600 text-white font-semibold px-2.5 py-1 rounded text-[11px]"
+              >
+                Receber →
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABELA COMPLETA PARA TABLET/DESKTOP (hidden md:block) -->
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
