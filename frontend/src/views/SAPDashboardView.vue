@@ -417,7 +417,7 @@ const carregando = ref(false)
 const erroCarga = ref('')
 const LIMITE = 100
 
-const carregarDados = async (acumular = false) => {
+const carregarDados = async (acumular = false, tentativa = 1) => {
   carregando.value = true
   erroCarga.value = ''
   try {
@@ -436,9 +436,15 @@ const carregarDados = async (acumular = false) => {
     totalFiltrado.value = res.data.total_filtrado
   } catch (err: any) {
     console.error('Erro ao carregar dados do SAP:', err)
+    // O servidor gratuito do Render "dorme" sem uso e leva ~50s para acordar: tenta novamente sozinho
+    if (!err.response?.data?.detail && tentativa < 4) {
+      erroCarga.value = `Aguardando o servidor iniciar (tentativa ${tentativa} de 3)... isso pode levar até 1 minuto.`
+      setTimeout(() => carregarDados(acumular, tentativa + 1), 15000)
+      return
+    }
     erroCarga.value =
       err.response?.data?.detail ||
-      'Não foi possível conectar ao backend (http://127.0.0.1:8000). Verifique se o servidor FastAPI está rodando.'
+      'Não foi possível conectar ao servidor da API. Aguarde alguns segundos e clique em "Atualizar Painel".'
   } finally {
     carregando.value = false
   }
