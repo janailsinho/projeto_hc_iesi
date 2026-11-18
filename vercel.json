@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://sispato-api-mhzb.onrender.com/api/:path*"
+      "destination": "https://sispata-api-mhzb.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
