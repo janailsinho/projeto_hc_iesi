@@ -2,12 +2,14 @@ import axios from 'axios';
 import { useAuthStore } from '../stores/auth';
 import router from '../router';
 
-// URLs relativas (/api/...) em todos os ambientes:
-// - Local: o proxy do Vite (vite.config.ts) encaminha /api para o backend em :8000.
-// - Vercel: o rewrite do vercel.json encaminha /api para o backend no Render.
-// Assim, o endereço do Render fica definido em um único lugar (vercel.json).
+// Localmente (localhost / 127.0.0.1) usa o proxy do Vite ('');
+// Na Vercel, chama diretamente https://sispata-api-mhzb.onrender.com para evitar timeout de rewrite da Vercel.
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 const api = axios.create({
-  baseURL: '',
+  baseURL: isLocalhost ? '' : 'https://sispata-api-mhzb.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   }

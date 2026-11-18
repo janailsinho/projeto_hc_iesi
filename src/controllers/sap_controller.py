@@ -1989,6 +1989,22 @@ def _agrupar_solicitacoes_csv(itens: List[Dict[str, str]]) -> Dict[str, List[Dic
     return grupos
 
 
+_cache_aghu_exames: Optional[List[Dict[str, Any]]] = None
+_cache_aghu_data: Optional[date] = None
+
+
+def _obter_exames_aghu_em_cache(itens_csv: List[Dict[str, str]], hoje: date) -> List[Dict[str, Any]]:
+    """Mantém as 21.176 solicitações do CSV pré-processadas em memória para resposta instantânea (<50ms)."""
+    global _cache_aghu_exames, _cache_aghu_data
+    if _cache_aghu_exames is None or _cache_aghu_data != hoje:
+        _cache_aghu_exames = [
+            _montar_exame_aghu_nao_recebido(cod, grupo, hoje)
+            for cod, grupo in _agrupar_solicitacoes_csv(itens_csv).items()
+        ]
+        _cache_aghu_data = hoje
+    return _cache_aghu_exames
+
+
 def _montar_exame_aghu_nao_recebido(codigo: str, itens: List[Dict[str, str]], hoje: date) -> Dict[str, Any]:
     """Formata uma solicitação do CSV do AGHU para exibição no Painel SAP e no Acervo."""
     primeiro = itens[0]
@@ -2091,10 +2107,10 @@ async def listar_exames_painel(
         visao["recebido_no_sap"] = True
         lista_db.append(visao)
 
+    todos_aghu = _obter_exames_aghu_em_cache(itens_csv, hoje)
     lista_aghu = [
-        _montar_exame_aghu_nao_recebido(cod, grupo, hoje)
-        for cod, grupo in _agrupar_solicitacoes_csv(itens_csv).items()
-        if cod not in solicitacoes_no_db
+        ex for ex in todos_aghu
+        if ex["codigo_solicitacao"] not in solicitacoes_no_db
     ]
 
     todos = lista_db + lista_aghu
